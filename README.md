@@ -2,3 +2,7 @@
 # - Eugênio Polistchuk Berendsen (@Zerty03)
 # - Grupo: RA1-14
 # ============================================
+
+# Como executar o compilador
+
+# - 
