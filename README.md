@@ -1,3 +1,4 @@
-# RA1-14
-
-Eugênio Polistchuk Berendsen
+# ============================================
+# - Eugênio Polistchuk Berendsen (@Zerty03)
+# - Grupo: RA1-14
+# ============================================
