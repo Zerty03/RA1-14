@@ -1,4 +1,5 @@
 import sys
+contador_ciclos = 0
 
 def analisador_lexico(linha_texto):
     ESTADO_INICIAL = 0
@@ -90,7 +91,7 @@ def gerar_assembly(lista_tokens, nome_arquivo_saida):
     memoria_numeros = []
 
     with open(nome_arquivo_saida, 'w') as f:
-        f.write(".global_start\n")
+        f.write(".global _start\n")
         f.write(".text\n")
         f.write("_start:\n\n")
 
@@ -99,57 +100,57 @@ def gerar_assembly(lista_tokens, nome_arquivo_saida):
                 id_num = len(memoria_numeros) + 1
                 memoria_numeros.append((id_num, valor))
 
-                f.write(f" - Numero: {valor} - \n")
+                f.write(f" // - Numero: {valor} - \n")
                 f.write(f" ldr r0, =num_{id_num} \n")
                 f.write(f" vldr d0, [r0] \n")
                 f.write(" vpush {d0} \n\n")
             
             elif tipo == "OPERADOR" and valor not in ['(', ')']:
-                f.write(f" - Operador: {valor} - \n")
+                f.write(f" // - Operador: {valor} - \n")
                 f.write(" vpop {d0} \n")
                 f.write(" vpop {d1} \n")
 
-            if valor == '+':
-                f.write(" vadd.f64 d2, d1, d0 \n")
-            elif valor == '-':
-                f.write(" vadd.f64 d2, d1, d0 \n")
-            elif valor == '*':
-                f.write(" vadd.f64 d2, d1, d0 \n")
-            elif valor == '/':
-                f.write(" vadd.f64 d2, d1, d0 \n")
-            elif valor == '//':
-                f.write(" vdiv.f64 d2, d1, d0 \n")
-                f.write(" vcvt.s32.f64 s0, d2 \n")
-                f.write(" vcvt.f64.s32 d2, s0 \n")
-            elif valor == '%':
-                f.write(" vdiv.f64 d2, d1, d0 \n")
-                f.write(" vcvt.s32.f64 s0, d2 \n")
-                f.write(" vcvt.f64.s32 d2, s0 \n")
-                f.write(" vmul.f64 d2, d2, d0 \n")
-                f.write(" vsub.f64 d2, d1, d2 \n")
-            elif valor == '^':
-                contador_ciclos += 1
-                id_ciclo = contador_ciclos
-                f.write(" vcvt.s32.f64 s0, d0 \n")
-                f.write(" vmov r2, s0 \n")
+                if valor == '+':
+                    f.write(" vadd.f64 d2, d1, d0 \n")
+                elif valor == '-':
+                    f.write(" vsub.f64 d2, d1, d0 \n")
+                elif valor == '*':
+                    f.write(" vmul.f64 d2, d1, d0 \n")
+                elif valor == '/':
+                    f.write(" vdiv.f64 d2, d1, d0 \n")
+                elif valor == '//':
+                    f.write(" vdiv.f64 d2, d1, d0 \n")
+                    f.write(" vcvt.s32.f64 s0, d2 \n")
+                    f.write(" vcvt.f64.s32 d2, s0 \n")
+                elif valor == '%':
+                    f.write(" vdiv.f64 d2, d1, d0 \n")
+                    f.write(" vcvt.s32.f64 s0, d2 \n")
+                    f.write(" vcvt.f64.s32 d2, s0 \n")
+                    f.write(" vmul.f64 d2, d2, d0 \n")
+                    f.write(" vsub.f64 d2, d1, d2 \n")
+                elif valor == '^':
+                    contador_ciclos += 1
+                    id_ciclo = contador_ciclos
+                    f.write(" vcvt.s32.f64 s0, d0 \n")
+                    f.write(" vmov r2, s0 \n")
 
-                id_num_const = len(memoria_numeros) + 1
-                memoria_numeros.append((id_num_const, 1.0))
-                f.write(f" ldr r0, =num_{id_num_const} \n")
-                f.write("  vldr d2, [r0] \n")
+                    id_num_const = len(memoria_numeros) + 1
+                    memoria_numeros.append((id_num_const, 1.0))
+                    f.write(f" ldr r0, =num_{id_num_const} \n")
+                    f.write("  vldr d2, [r0] \n")
 
-                f.write(f"\nciclo_potencia_{id_ciclo}:\n")
-                f.write(" cmp r2, #0 \n")
-                f.write(f" ble fim_potencia_{id_ciclo} \n")
-                f.write(" vmul.f64 d2, d2, d1 \n")
-                f.write(" sub r2, r2, #1 \n")
-                f.write(f" b ciclo_potencia_{id_ciclo} \n")
-                f.write(f"\nfim_potencia_{id_ciclo}:\n")
+                    f.write(f"\nciclo_potencia_{id_ciclo}:\n")
+                    f.write(" cmp r2, #0 \n")
+                    f.write(f" ble fim_potencia_{id_ciclo} \n")
+                    f.write(" vmul.f64 d2, d2, d1 \n")
+                    f.write(" sub r2, r2, #1 \n")
+                    f.write(f" b ciclo_potencia_{id_ciclo} \n")
+                    f.write(f"\nfim_potencia_{id_ciclo}:\n")
 
-                f.write(" vpush {d2} \n\n")
+                    f.write(" vpush {d2} \n\n")
 
             elif tipo == "COMANDO":
-                f.write(f" - Comando: {valor} - \n")
+                f.write(f" // - Comando: {valor} - \n")
                 if valor == "MEM":
                     f.write(" ldr r0, =variavel_mem  \n")
                     f.write(" vldr d0, [r0] \n")
