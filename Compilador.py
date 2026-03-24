@@ -13,7 +13,7 @@ def analisador_lexico(linha_texto):
 
     i = 0
     while i < len(entrada):
-        caracter = entrada[1]
+        caracter = entrada[i]
         
         if estado_atual == ESTADO_INICIAL:
             if caracter.isspace():
