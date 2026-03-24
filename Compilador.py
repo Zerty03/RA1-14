@@ -179,4 +179,7 @@ def gerar_assembly(lista_tokens, nome_arquivo_saida):
         f.write("historico_res: .space 800 \n")
         f.write("ponteiro_res: .word 0 \n")
 
-                
+def salvar_tokens(lista_tokens, nome_arquivo):
+    with open(nome_arquivo, 'w') as f:
+        for tipo, valor in lista_tokens:
+            f.write(f"<{tipo}, {valor}>\n")
