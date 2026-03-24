@@ -1,3 +1,5 @@
+import sys
+
 def analisador_lexico(linha_texto):
     ESTADO_INICIAL = 0
     ESTADO_NUMERO_INTEIRO = 1
@@ -183,3 +185,15 @@ def salvar_tokens(lista_tokens, nome_arquivo):
     with open(nome_arquivo, 'w') as f:
         for tipo, valor in lista_tokens:
             f.write(f"<{tipo}, {valor}>\n")
+
+def main():
+    if len(sys.argv) < 2:
+        print("Uso correto: python Compilador.py <arquivo_de_teste.txt>")
+        return
+    
+    nome_arquivo_entrada = sys.argv[1]
+
+    nome_arquivo_assembly = "saida_assembly.s"
+    nome_arquivo_tokens = "tokens_gerados.txt"
+    todos_tokens = []
+    
