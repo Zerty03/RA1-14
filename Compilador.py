@@ -196,4 +196,33 @@ def main():
     nome_arquivo_assembly = "saida_assembly.s"
     nome_arquivo_tokens = "tokens_gerados.txt"
     todos_tokens = []
-    
+
+    try:
+        print(f"Lendo o arquivo: {nome_arquivo_entrada} ...")
+
+        with open(nome_arquivo_entrada, 'r') as arquivo:
+            linhas = arquivo.readlines()
+
+            numero_linha = 1
+            for linha in linhas:
+                try:
+                    tokens_da_linha = analisador_lexico(linha)
+                    todos_tokens.extend(tokens_da_linha)
+                except ValueError as erro:
+                    print(f"\n Erro de compilação")
+                    print(f"Erro Lexico na linha {numero_linha}: {erro}")
+                    sys.exit(1)
+
+                numero_linha += 1
+
+        salvar_tokens(todos_tokens, nome_arquivo_tokens)
+        print(f"Sucesso! Arquivo de tokens gerado: {nome_arquivo_tokens}")
+
+        gerar_assembly(todos_tokens, nome_arquivo_assembly)
+        print(f"Sucesso! Arquivo Assembly gerado: {nome_arquivo_assembly}")
+
+    except FileNotFoundError:
+        print(f"Erro: O arquivo '{nome_arquivo_entrada}' não foi encontrado na pasta atual")
+
+if __name__ == "__main__":
+    main()

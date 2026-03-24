@@ -5,4 +5,4 @@
 
 # Como executar o compilador
 
-# - 
+# - Abrir o terminal nesta pasta e digitar: python Compilador.py nome_arquivo_teste.txt
