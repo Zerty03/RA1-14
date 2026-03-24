@@ -3,6 +3,7 @@ def analisador_lexico(linha_texto):
     ESTADO_NUMERO_INTEIRO = 1
     ESTADO_NUMERO_DECIMAL = 2
     ESTADO_LETRA = 3 
+    ESTADO_DIVISAO = 4
     
     estado_atual = ESTADO_INICIAL
     lexema_atual = ""
@@ -10,10 +11,13 @@ def analisador_lexico(linha_texto):
     
     entrada = linha_texto + " "
 
-    for caracter in entrada:
+    i = 0
+    while i < len(entrada):
+        caracter = entrada[1]
         
         if estado_atual == ESTADO_INICIAL:
             if caracter.isspace():
+                i += 1
                 continue 
             
             elif caracter.isdigit():
@@ -23,12 +27,23 @@ def analisador_lexico(linha_texto):
             elif caracter.isalpha():
                 estado_atual = ESTADO_LETRA
                 lexema_atual += caracter
+
+            elif caracter == '/':
+                estado_atual = ESTADO_DIVISAO
                 
             elif caracter in "+-*/%^()":
                 tokens.append(("OPERADOR", caracter))
                 
             else:
                 pass 
+
+        elif estado_atual == ESTADO_DIVISAO:
+            if caracter == '/':
+                tokens.append(("OPERADOR", "//"))
+            else:
+                tokens.append(("OPERADOR", "/"))
+                i -= 1
+            estado_atual = ESTADO_INICIAL
 
         elif estado_atual == ESTADO_NUMERO_INTEIRO:
             if caracter.isdigit():
@@ -42,9 +57,7 @@ def analisador_lexico(linha_texto):
                 tokens.append(("NUMERO", float(lexema_atual)))
                 lexema_atual = ""
                 estado_atual = ESTADO_INICIAL 
-                
-                if caracter in "+-*/%^()":
-                    tokens.append(("OPERADOR", caracter))
+                i -= 1
 
         elif estado_atual == ESTADO_NUMERO_DECIMAL:
             if caracter.isdigit():
@@ -53,9 +66,7 @@ def analisador_lexico(linha_texto):
                 tokens.append(("NUMERO", float(lexema_atual)))
                 lexema_atual = ""
                 estado_atual = ESTADO_INICIAL
-                
-                if caracter in "+-*/%^()":
-                    tokens.append(("OPERADOR", caracter))
+                i -= 1
                     
         elif estado_atual == ESTADO_LETRA:
             if caracter.isalpha():
@@ -64,8 +75,8 @@ def analisador_lexico(linha_texto):
                 tokens.append(("COMANDO", lexema_atual))
                 lexema_atual = ""
                 estado_atual = ESTADO_INICIAL
+                i -= 1
                 
-                if caracter in "+-*/%^()":
-                    tokens.append(("OPERADOR", caracter))
+        i += 1
 
     return tokens
