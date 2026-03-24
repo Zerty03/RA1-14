@@ -115,5 +115,68 @@ def gerar_assembly(lista_tokens, nome_arquivo_saida):
                 f.write(" vadd.f64 d2, d1, d0 \n")
             elif valor == '/':
                 f.write(" vadd.f64 d2, d1, d0 \n")
-                
+            elif valor == '//':
+                f.write(" vdiv.f64 d2, d1, d0 \n")
+                f.write(" vcvt.s32.f64 s0, d2 \n")
+                f.write(" vcvt.f64.s32 d2, s0 \n")
+            elif valor == '%':
+                f.write(" vdiv.f64 d2, d1, d0 \n")
+                f.write(" vcvt.s32.f64 s0, d2 \n")
+                f.write(" vcvt.f64.s32 d2, s0 \n")
+                f.write(" vmul.f64 d2, d2, d0 \n")
+                f.write(" vsub.f64 d2, d1, d2 \n")
+            elif valor == '^':
+                contador_ciclos += 1
+                id_ciclo = contador_ciclos
+                f.write(" vcvt.s32.f64 s0, d0 \n")
+                f.write(" vmov r2, s0 \n")
+
+                id_num_const = len(memoria_numeros) + 1
+                memoria_numeros.append((id_num_const, 1.0))
+                f.write(f" ldr r0, =num_{id_num_const} \n")
+                f.write("  vldr d2, [r0] \n")
+
+                f.write(f"\nciclo_potencia_{id_ciclo}:\n")
+                f.write(" cmp r2, #0 \n")
+                f.write(f" ble fim_potencia_{id_ciclo} \n")
+                f.write(" vmul.f64 d2, d2, d1 \n")
+                f.write(" sub r2, r2, #1 \n")
+                f.write(f" b ciclo_potencia_{id_ciclo} \n")
+                f.write(f"\nfim_potencia_{id_ciclo}:\n")
+
+                f.write(" vpush {d2} \n\n")
+
+            elif tipo == "COMANDO":
+                f.write(f" - Comando: {valor} - \n")
+                if valor == "MEM":
+                    f.write(" ldr r0, =variavel_mem  \n")
+                    f.write(" vldr d0, [r0] \n")
+                    f.write(" vpush {d0} \n\n")
+                elif valor == "RES":
+                    f.write(" vpop {d0} \n")
+                    f.write(" vcvt.s32.f64 s0, d0 \n")
+                    f.write(" vmov r1, s0 \n")
+                    f.write(" mov r2, #8 \n")
+                    f.write(" mul r1, r1, r2 \n")
+                    f.write(" ldr r0, =historico_res \n")
+                    f.write(" ldr r3, =ponteiro_res  \n")
+                    f.write(" ldr r3, [r3] \n")
+                    f.write(" mul r3, r3, r2 \n")
+                    f.write(" add r0, r0, r3 \n")
+                    f.write(" sub r0, r0, r1 \n")
+                    f.write(" vldr d2, [r0] \n")
+                    f.write(" vpush {d2} \n\n")
+
+        f.write("\n_fim:\n")
+        f.write(" b _fim \n")
+
+        f.write("\n.data\n")
+
+        for id_num, val in memoria_numeros:
+            f.write(f"num_{id_num}: .double {val}\n")
+
+        f.write("\nvariavel_mem: .space 8 \n")
+        f.write("historico_res: .space 800 \n")
+        f.write("ponteiro_res: .word 0 \n")
+
                 
