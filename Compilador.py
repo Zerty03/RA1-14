@@ -37,7 +37,7 @@ def analisador_lexico(linha_texto):
                 tokens.append(("OPERADOR", caracter))
                 
             else:
-                pass 
+                raise ValueError(f"Caractere inválido '{caracter}' na coluna {i+1}")
 
         elif estado_atual == ESTADO_DIVISAO:
             if caracter == '/':
