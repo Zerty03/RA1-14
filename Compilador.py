@@ -80,3 +80,40 @@ def analisador_lexico(linha_texto):
         i += 1
 
     return tokens
+
+def gerar_assembly(lista_tokens, nome_arquivo_saida):
+
+    global contador_ciclos
+
+    memoria_numeros = []
+
+    with open(nome_arquivo_saida, 'w') as f:
+        f.write(".global_start\n")
+        f.write(".text\n")
+        f.write("_start:\n\n")
+
+        for tipo, valor in lista_tokens:
+            if tipo == "NUMERO":
+                id_num = len(memoria_numeros) + 1
+                memoria_numeros.append((id_num, valor))
+
+                f.write(f" - Numero: {valor} - \n")
+                f.write(f" ldr r0, =num_{id_num} \n")
+                f.write(f" vldr d0, [r0] \n")
+                f.write(" vpush {d0} \n\n")
+            
+            elif tipo == "OPERADOR" and valor not in ['(', ')']:
+                f.write(f" - Operador: {valor} - \n")
+                f.write(" vpop {d0} \n")
+                f.write(" vpop {d1} \n")
+
+            if valor == '+':
+                f.write(" vadd.f64 d2, d1, d0 \n")
+            elif valor == '-':
+                f.write(" vadd.f64 d2, d1, d0 \n")
+            elif valor == '*':
+                f.write(" vadd.f64 d2, d1, d0 \n")
+            elif valor == '/':
+                f.write(" vadd.f64 d2, d1, d0 \n")
+                
+                
