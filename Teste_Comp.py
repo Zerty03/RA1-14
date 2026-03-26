@@ -44,6 +44,19 @@ class TestAnalisadorLexico(unittest.TestCase):
             
         with self.assertRaises(ValueError):
             analisador_lexico("5.0 2.0 $")
+    
+    def test_espacos_e_linhas_vazias(self):
+        """Testa se o autômato ignora múltiplos espaços e lida com linhas vazias."""
+        # Vários espaços entre os tokens
+        self.assertEqual(analisador_lexico("(    5.0   2.0   +   )"), [
+            ("OPERADOR", "("),
+            ("NUMERO", 5.0),
+            ("NUMERO", 2.0),
+            ("OPERADOR", "+"),
+            ("OPERADOR", ")")
+        ])
+        # Linha totalmente vazia
+        self.assertEqual(analisador_lexico("   "), [])
 
 if __name__ == '__main__':
     unittest.main(verbosity=2)
