@@ -13,7 +13,7 @@
 ## Como executar o compilador
 O programa roda via linha de comando no terminal. Para compilar os arquivos de texto contendo as expressões, utilize os comandos abaixo:
 
-** Para rodar o Arquivo de Teste 1:**
+**Para rodar o Arquivo de Teste 1:**
 `python Compilador.py teste1.txt`
 
 **Para rodar o Arquivo de Teste 2:**
